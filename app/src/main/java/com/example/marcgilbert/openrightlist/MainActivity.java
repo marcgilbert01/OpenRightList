@@ -2,6 +2,7 @@ package com.example.marcgilbert.openrightlist;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,11 +14,19 @@ import android.widget.Toast;
 
 import com.example.openrightrecyclerview.OpenRightView;
 import com.example.openrightrecyclerview.OpenRightViewHolder;
+import com.jakewharton.rxbinding.view.RxView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.Subject;
 
 public class MainActivity extends AppCompatActivity implements MyFragment.OnFragmentInteractionListener{
 
@@ -26,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.OnFrag
     private OpenRightView openRightView;
     private MyOpenRightAdapter myOpenRightAdapter;
     private ArticleApi articleApi;
+    private FloatingActionButton floatingActionButton;
 
 
 
@@ -37,26 +47,53 @@ public class MainActivity extends AppCompatActivity implements MyFragment.OnFrag
 
         openRightView = (OpenRightView) findViewById(R.id.openRightView);
 
-        articleApi = ArticleApi.getInstance();
-        articleApi.getArticles(new ArticleApi.Listener() {
-            @Override
-            public void onArticleLoaded(Map<Integer, Article> articleMap) {
+        floatingActionButton = (FloatingActionButton) findViewById(R.id.floatingActionButton_refresh);
+        floatingActionButton.setOnClickListener( v ->{
 
-                if( articleMap!=null  ) {
-                    List<Article> articleList = new ArrayList<Article>(articleMap.values());
+            Toast.makeText(context,"Toast",Toast.LENGTH_LONG ).show();
+
+        } );
+
+
+
+
+        articleApi = ArticleApi.getInstance();
+        Observable observable = articleApi.getObservable();
+        observable
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread() )
+            .subscribe(new Observer<Map<Integer,Article>>() {
+
+                @Override
+                public void onSubscribe(Disposable d) {
+
+                    List<Article> articleList = new ArrayList<Article>();
                     myOpenRightAdapter = new MyOpenRightAdapter( articleList );
                     openRightView.setAdapter( myOpenRightAdapter );
-                    Toast.makeText(context,"Articles",Toast.LENGTH_LONG).show();
                 }
-            }
 
-            @Override
-            public void onError(String errorMessage) {
+                @Override
+                public void onNext(Map<Integer,Article> articleMap) {
 
-                Toast.makeText(context , errorMessage , Toast.LENGTH_LONG).show();
+                    List<Article> articleList = new ArrayList<Article>(articleMap.values());
+                    myOpenRightAdapter.update( articleList );
+                }
 
-            }
+                @Override
+                public void onError(Throwable e) {
+                    Toast.makeText(context,e.getMessage(),Toast.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void onComplete() {
+                }
         });
+
+
+
+
+
+
     }
 
     @Override
@@ -128,6 +165,14 @@ public class MainActivity extends AppCompatActivity implements MyFragment.OnFrag
 
             }
         }
+
+
+        public void update(List<Article> articleList){
+
+            this.articleList = articleList;
+            notifyDataSetChanged();
+        }
+
 
     }
 
