@@ -6,6 +6,11 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+
 /**
  * Created by marcgilbert on 06/04/2017.
  */
@@ -32,12 +37,35 @@ public class ArticleViewModel {
         urlToImage = article.getUrlToImage();
         Date publishedDate = article.getPublishedAt();
         publishedAt = publishedDate!=null ? simpleDateFormat.format(publishedDate) : "";
-
     }
+
+    public Observable<String> getAuthorObservable(){
+
+        return Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(ObservableEmitter<String> e) throws Exception {
+                e.onNext( author );
+            }
+        });
+    }
+
+    public Observable<String> getTitleObservable(){
+
+        return Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(ObservableEmitter<String> e) throws Exception {
+                e.onNext( title );
+            }
+        });
+    }
+
+
+
 
     public int getArticleId() {
         return articleId;
     }
+
 
     public void setArticleId(int articleId) {
         this.articleId = articleId;
@@ -91,5 +119,11 @@ public class ArticleViewModel {
         this.publishedAt = publishedAt;
     }
 
+    public SimpleDateFormat getSimpleDateFormat() {
+        return simpleDateFormat;
+    }
 
+    public void setSimpleDateFormat(SimpleDateFormat simpleDateFormat) {
+        this.simpleDateFormat = simpleDateFormat;
+    }
 }

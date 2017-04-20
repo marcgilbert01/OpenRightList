@@ -12,26 +12,24 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.Subject;
 
 /**
  * Created by marcgilbert on 06/04/2017.
  */
 
-public class ArticleListArticleViewModel implements ArticleListNavigator{
+public class ArticleListViewModel {
 
-
-    BehaviorSubject<List<ArticleViewModel>> articleListBehaviorSubject = BehaviorSubject.create();
     ArticleApi articleApi;
+    Subject<List<ArticleViewModel>> subject;
 
 
-
-    public ArticleListArticleViewModel(ArticleApi articleApi) {
+    public ArticleListViewModel(ArticleApi articleApi, Subject<List<ArticleViewModel>> subject) {
         this.articleApi = articleApi;
+        this.subject = subject;
     }
 
-
     boolean loading = false;
-    @Override
     public void loadArticles(){
 
         if( !loading ){
@@ -49,12 +47,12 @@ public class ArticleListArticleViewModel implements ArticleListNavigator{
                         public void onNext(Map<Integer, Article> integerArticleMap) {
 
                             List<ArticleViewModel> articleListViewModelList = convertModelMapToModelViewList(integerArticleMap);
-                            articleListBehaviorSubject.onNext(articleListViewModelList);
+                            subject.onNext(articleListViewModelList);
                         }
 
                         @Override
                         public void onError(Throwable e) {
-                            articleListBehaviorSubject.onError(e);
+                            subject.onError(e);
                         }
 
                         @Override
@@ -82,12 +80,7 @@ public class ArticleListArticleViewModel implements ArticleListNavigator{
     }
 
 
-    public void start() {
-        loadArticles();
-    }
-
-
-    public BehaviorSubject<List<ArticleViewModel>> getArticleListBehaviorSubject() {
-        return articleListBehaviorSubject;
+    public Subject<List<ArticleViewModel>> getSubject() {
+        return subject;
     }
 }

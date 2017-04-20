@@ -14,12 +14,12 @@ import com.example.marcgilbert.openrightlist.UI.ArticleViewModel;
 import com.example.openrightrecyclerview.OpenRightView;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.Subject;
 
 
 public class ArticleListActivity extends AppCompatActivity implements ArticleDetailFragment.OnFragmentInteractionListener {
@@ -27,7 +27,7 @@ public class ArticleListActivity extends AppCompatActivity implements ArticleDet
     private Context context;
     private OpenRightView openRightView;
     private FloatingActionButton floatingActionButton;
-    private ArticleListArticleViewModel articleListViewModel;
+    private ArticleListViewModel articleListViewModel;
 
 
     @Override
@@ -48,8 +48,8 @@ public class ArticleListActivity extends AppCompatActivity implements ArticleDet
         openRightView.setAdapter( articleListAdapter );
 
         ArticleApi articleApi = ((ArticleApplication) getApplication()).getArticleApi();
-        articleListViewModel = new ArticleListArticleViewModel( articleApi );
-        articleListViewModel.getArticleListBehaviorSubject().subscribe(new Observer<List<ArticleViewModel>>() {
+        articleListViewModel = new ArticleListViewModel( articleApi, BehaviorSubject.create() );
+        articleListViewModel.getSubject().subscribe(new Observer<List<ArticleViewModel>>() {
             @Override
             public void onSubscribe(Disposable d) {
 
@@ -70,7 +70,7 @@ public class ArticleListActivity extends AppCompatActivity implements ArticleDet
             }
         });
 
-        articleListViewModel.start();
+        articleListViewModel.loadArticles();
 
     }
 

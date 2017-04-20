@@ -63,7 +63,7 @@ public class ArticleDetailFragment extends Fragment {
 
         ArticleApi articleApi = ((ArticleApplication) parentActivity.getApplication()).getArticleApi();
         articleDetailViewModel = new ArticleDetailViewModel( articleApi , articleId );
-        articleObservable = articleDetailViewModel.getArticleObservable();
+        //articleObservable = articleDetailViewModel.getArticleObservable();
 
     }
 

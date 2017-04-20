@@ -13,11 +13,11 @@ import io.reactivex.Observer;
  * Created by marcgilbert on 13/04/2017.
  */
 
-public class ArticleDetailViewModel extends ArticleViewModel {
+public class ArticleDetailViewModel {
 
     int articleId;
     ArticleApi articleApi;
-    Observable<Article> articleObservable;
+    Observable<ArticleDetailViewModel> articleObservable;
 
 
     public ArticleDetailViewModel(ArticleApi articleApi, int articleId) {
@@ -25,17 +25,8 @@ public class ArticleDetailViewModel extends ArticleViewModel {
         this.articleApi = articleApi;
         this.articleId = articleId;
 
-        articleObservable = Observable.create(new ObservableOnSubscribe<Article>() {
-            @Override
-            public void subscribe(ObservableEmitter<Article> e) throws Exception {
-                e.onNext( articleApi.getArticle(  articleId  ) );
-            }
-        });
-
     }
 
-    public Observable<Article> getArticleObservable() {
-        return articleObservable;
-    }
+
 
 }
