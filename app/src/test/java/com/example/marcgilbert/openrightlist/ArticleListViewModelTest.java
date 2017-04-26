@@ -106,14 +106,13 @@ public class ArticleListViewModelTest {
         // VERIFY THAT articleListViewModel requested the observable form article api
         verify( articleApi ).getArticleMapObservable();
 
-        articleListViewModel.getSubject().subscribe(articleViewModelList -> {
+        // CHECK THAT THE SUBJECT FROM THE VIEW MODEL RETURNS THE LIST OF VIEWMODELDETAIL
+        articleListViewModel.getSubject().subscribe( articleViewModelList -> {
 
             assertThat( articleViewModelList.size() , is(articleMap.size()) );
 
         });
 
-
-        //ve
 
     }
 
